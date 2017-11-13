@@ -1,10 +1,26 @@
 {{> header}}
-	<div class="container">
+	<div id="app" class="container">
 		<h1 class="text-center">Get your free coupon!</h1>
 		<form action="/submit" class="d-block mx-auto mt-4" style="max-width: 320px;">
 			<div class="form-group">
 				<label for="phone">Enter your phone</label>
 				<input id="phone" class="form-control" type="text" name="phone">
+			</div>
+			<div class="form-group">
+				<div class="form-check">
+				    <label class="form-check-label">
+		     		 	<input id="age" name="age" type="checkbox" class="form-check-input" value="1">
+			      		I am over 18
+			    	</label>
+  				</div>
+			</div>
+			<div class="form-group">
+				<div class="form-check">
+				    <label class="form-check-label">
+		     		 	<input id="terms" name="terms" type="checkbox" class="form-check-input" value="1">
+			      		I accept the terms and conditions
+			    	</label>
+  				</div>
 			</div>
 			<button type="submit" class="btn btn-success btn-block">Redeem coupon!</button>
 		</form>
@@ -22,21 +38,29 @@
 		    		callback(countryCode);
 		  		});
 			},
-			utilsScript: '/plugins/intl-tel-input/utils.js',
+			utilsScript: '/plugins/intl-tel-input/js/utils.js',
 			autoHideDialCode: false,
 		});
 
 		$('form').on('submit', function(e) {
 			// Prevent default event
 			e.preventDefault();
-			// Get phone with country code
-			var phone = $("#phone").intlTelInput("getNumber");
+			// Get data from user input
+			var phone = $("#phone").intlTelInput("getNumber"); // Get phone with country code
+		  	var age = ($('#age').is(":checked")) ? 1 : 0;
+		  	var terms = ($('#terms').is(":checked")) ? 1 : 0;
 			// Submit form with ajax
 			$.ajax({
-		  		url: "test.html",
-		  		context: document.body
-			}).done(function() {
-		  		$( this ).addClass( "done" );
+		  		url: "/api/sms-promotion",
+		  		type: 'POST',
+		  		dataType: 'json',
+		  		data: {phone: phone, age: age, terms: terms},
+		  		success: function(res) {
+		  			$('#app').replaceWith('<h1 class="text-center">Your promo code has been sent! Please check your phone.</h1>');
+		  		},
+		  		error: function(res) {
+		  			alert(res.responseJSON.message);
+		  		}
 			});
 			return false;
 		})

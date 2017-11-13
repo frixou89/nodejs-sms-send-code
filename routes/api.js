@@ -10,8 +10,28 @@ const client = require('twilio')(t_accountSid, t_authToken);
 router.post('/sms-promotion', function(req, res, next) {
 	// Set Content-Type to json
 	res.setHeader('Content-Type', 'application/json');
-	// Get phone from body parameters
+	// Get input from body parameters
 	let phone = req.body.phone;
+	let age = req.body.age;
+	let terms = req.body.terms;
+
+	// Check phone
+	if (!phone) {
+		res.status(404);
+		return res.send(JSON.stringify({ success: false, message: 'Please enter your phone.'}));
+	}
+
+	// Check age confirmed
+	if (age != 1) {
+		res.status(404);
+		return res.send(JSON.stringify({ success: false, message: 'Please confirm your age.'}));
+	}
+	// Check terms accepted
+	if (terms != 1) {
+		res.status(404);
+		return res.send(JSON.stringify({ success: false, message: 'Please accept terms & conditions.'}));
+	}
+
 	let message = '';
 	// Get the current hour
 	let hour = new Date().getHours();
@@ -23,28 +43,25 @@ router.post('/sms-promotion', function(req, res, next) {
 	} else {
 		message = 'Good morning! Your promocode is AM123';
 	}
-	// Only proceed if phone exists
-	if (phone) {
-		// Initialize the client call
-		let clientCall = client.api.messages.create({
-	    	to: phone,
-	    	from: t_number,
-	    	body: message,
-	  	});
-		// Get client promise
-	  	clientCall.then(function(call) {
-		    return res.send(JSON.stringify({ success: true, message:  'SMS Sent!'}));
-		}, function(error) {
-		    return res.send(JSON.stringify({ success: false, message:  (error.message || 'Something went wrong!')}));
-		});
-  	// Phone not found
-	} else {
-		return res.status(400); // Bad request http error code
-		return res.send(JSON.stringify({ success: false, message: 'Phone not found!' }));
-	}
+
+	// Initialize the client call
+	let clientCall = client.api.messages.create({
+    	to: phone,
+    	from: t_number,
+    	body: message,
+  	});
+	// Get client promise
+  	clientCall.then(function(call) {
+  		res.status(200);
+	    return res.send(JSON.stringify({ success: true, message: 'SMS Sent!'}));
+	}, function(error) {
+		res.status(400);
+	    return res.send(JSON.stringify({ success: false, message:  (error.message || 'Something went wrong!')}));
+	});
+
 	// Fallback
-	return res.status(400);
-	return res.send(JSON.stringify({ success: false, message: 'Something went wrong!' }));
+	res.status(200);
+	return res.send(JSON.stringify({ success: true }));
 });
 
 module.exports = router;
