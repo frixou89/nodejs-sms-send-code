@@ -1,29 +1,45 @@
-<!doctype html>
-<html lang="en">
-<head>
-	<title>Hello, world!</title>
-	<!-- Required meta tags -->
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-	<!-- Bootstrap CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-</head>
-<body>
+{{> header}}
 	<div class="container">
-		<form action="/submit" class="form d-block mx-auto mt-4" style="max-width: 320px;">
+		<h1 class="text-center">Get your free coupon!</h1>
+		<form action="/submit" class="d-block mx-auto mt-4" style="max-width: 320px;">
 			<div class="form-group">
-				<label for="in-phone">Enter your phone</label>
-				<input id="in-phone" class="form-control" type="text" name="phone">
+				<label for="phone">Enter your phone</label>
+				<input id="phone" class="form-control" type="text" name="phone">
 			</div>
-			<button type="submit" class="btn btn-primary">Send me the code</button>
+			<button type="submit" class="btn btn-success btn-block">Redeem coupon!</button>
 		</form>
 	</div>
+	{{#extend "scripts"}}
+	<script>
+		$("#phone").intlTelInput({
+			// exclude countries example
+			excludeCountries: ['CA', 'UK', 'PA'],
+			// Geolocate ip and set country by default
+			initialCountry: 'auto',
+			geoIpLookup: function(callback) {
+		  		$.get("http://freegeoip.net/json/", function() {}, "jsonp").always(function(resp) {
+		    		var countryCode = (resp && resp.country_code) ? resp.country_code : "gb";
+		    		callback(countryCode);
+		  		});
+			},
+			utilsScript: '/plugins/intl-tel-input/utils.js',
+			autoHideDialCode: false,
+		});
 
-	<!-- Optional JavaScript -->
-	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
-</body>
-</html>
+		$('form').on('submit', function(e) {
+			// Prevent default event
+			e.preventDefault();
+			// Get phone with country code
+			var phone = $("#phone").intlTelInput("getNumber");
+			// Submit form with ajax
+			$.ajax({
+		  		url: "test.html",
+		  		context: document.body
+			}).done(function() {
+		  		$( this ).addClass( "done" );
+			});
+			return false;
+		})
+	</script>
+	{{/extend}}
+{{> footer}}
