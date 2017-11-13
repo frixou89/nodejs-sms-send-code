@@ -1,0 +1,30 @@
+{
+  "name": "nodejs-sms-send-code",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/www"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/frixou89/nodejs-sms-send-code.git"
+  },
+  "author": "Marios Frixou",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/frixou89/nodejs-sms-send-code/issues"
+  },
+  "homepage": "https://github.com/frixou89/nodejs-sms-send-code#readme",
+  "dependencies": {
+    "body-parser": "~1.18.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "dotenv": "^4.0.0",
+    "express": "^4.16.2",
+    "hbs": "^4.0.1",
+    "morgan": "~1.9.0",
+    "serve-favicon": "~2.4.5"
+  }
+}
